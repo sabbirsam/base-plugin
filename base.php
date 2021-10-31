@@ -35,11 +35,12 @@ class Base{
         add_action("plugins_loaded", array( $this, 'base_load_textdomain' ));
 
         add_action('init', array( $this, 'base_menus') );
+    }
 
+    function register(){
 
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) ); 
         add_action( 'wp_enqueue_scripts', array( $this, 'public_enqueue' ) ); 
-
     }
 
 
@@ -152,6 +153,7 @@ class Base{
 
 if(class_exists('Base')){
     $base = new Base;
+    $base ->register();
 }
 
 
