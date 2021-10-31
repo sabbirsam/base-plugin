@@ -2,7 +2,7 @@
 
 <?php
 /**
- * @package  questionnaire-based-filter
+ * @package  base-based-filter
  */
 /*
 Plugin Name: Base
@@ -39,6 +39,12 @@ class Base{
         add_action('init', array( $this, 'base_menus') );
     }
 
+    function register(){
+
+        add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) ); 
+        add_action( 'wp_enqueue_scripts', array( $this, 'public_enqueue' ) ); 
+    }
+
 
     function activate_base()
     {
@@ -55,6 +61,8 @@ class Base{
         $this->base_menus();
         flush_rewrite_rules();
     }
+
+ 
 
 
     function base_load_textdomain(){
@@ -122,18 +130,32 @@ class Base{
 
         );
 
-        register_post_type( __('Base'), $args ); //this post type used on save user data
+        register_post_type( __('base'), $args ); //this post type used on save user data
+    }
+
+
+    function admin_enqueue(){
+
+        wp_enqueue_script( 'base_post_type_select_js', plugins_url( '/assets/base-script.js', __FILE__ ),array('jquery'),1.0,true );
+
+        wp_enqueue_style( 'base_bootstrap_css', plugins_url( '/assets/base-style.css', __FILE__ ));
+    }
+
+    function public_enqueue(){
+        //code
+        wp_enqueue_script( 'base_post_type_select_js', plugins_url( '/assets/base-script.js', __FILE__ ),array('jquery'),1.0,true );
+
+        wp_enqueue_style( 'base_bootstrap_css', plugins_url( '/assets/base-style.css', __FILE__ ));
     }
 
 
 
 }
 
-
 if(class_exists('Base')){
     $base = new Base;
+    $base ->register();
 }
-
 
 
 register_activation_hook (__FILE__, array( $base, 'activate_base' ) );
@@ -142,6 +164,6 @@ register_activation_hook (__FILE__, array( $base, 'activate_base' ) );
 register_deactivation_hook (__FILE__, array( $base, 'deactivate_base' ) );
 
 
-# ==================================================================================
-# base-plugin part -1
+## ==================================================================================
+# base-plugin part -2 separation of class and files 
 

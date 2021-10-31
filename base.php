@@ -30,46 +30,48 @@ defined('ABSPATH') or die('Hey, what are you doing here? You silly human!');
 
 class Base{
 
-    function __construct()
-    {
-        add_action("plugins_loaded", array( $this, 'base_load_textdomain' ));
-
-        add_action('init', array( $this, 'base_menus') );
-    }
 
     function register(){
 
+        add_action("plugins_loaded", array( $this, 'base_load_textdomain' ));
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) ); 
         add_action( 'wp_enqueue_scripts', array( $this, 'public_enqueue' ) ); 
+
+
+        //custom page 
+        add_action("admin_menu", array($this, 'add_admin_pages'));
     }
 
-
-    function activate_base()
-    {
-        $this->base_menus();
-        // Activate::activate();
-        flush_rewrite_rules();
+    protected function create_post_type(){
+        add_action('init', array( $this, 'base_menus') );
     }
-
-
-
-    function deactivate_base()
-    {
-        // Deactivate::deactivate();
-        $this->base_menus();
-        flush_rewrite_rules();
-    }
-
- 
 
 
     function base_load_textdomain(){
         load_plugin_textdomain('base', false,dirname(__FILE__)."languages");
     }
 
+    public function add_admin_pages(){
+
+        // add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
+        add_menu_page( 
+            'Custom Menu Page Title', //page
+            'Custom Menu Page',  //title
+            'manage_options', //capa
+            'base_plugin', //slug
+            array($this, 'base_pages'),//function 
+            'dashicons-welcome-widgets-menus',
+                90 );
+    }
 
 
-    public function base_menus(){
+    public function base_pages()
+    {
+        require_once plugin_dir_path(__FILE__).'template/base-page.php';
+    }
+
+
+    function base_menus(){
 
         $labels = array(
 
@@ -124,8 +126,6 @@ class Base{
             'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
 
             'menu_icon'           => 'dashicons-code-standards',
-
-
         );
 
         register_post_type( __('base'), $args ); //this post type used on save user data
@@ -147,6 +147,18 @@ class Base{
     }
 
 
+    function activate(){ //function name that used below
+        //require as its others used
+        require_once plugin_dir_path(__FILE__).'inc/base-activate.php';
+        BaseActivate::activate();
+    }
+
+    function deactivate(){
+        require_once plugin_dir_path(__FILE__).'inc/base-deactivate.php';
+        Basedeactivate::deactivate(); 
+    }
+
+
 
 }
 
@@ -157,8 +169,11 @@ if(class_exists('Base')){
 }
 
 
-register_activation_hook (__FILE__, array( $base, 'activate_base' ) );
 
 
-register_deactivation_hook (__FILE__, array( $base, 'deactivate_base' ) );
+register_activation_hook (__FILE__, array( $base, 'activate' ) ); // class instantiate obj name , function name function name // this is calling directly 
 
+register_deactivation_hook (__FILE__, array( $base, 'deactivate' ) ); // class instantiate  obj name , static function name
+
+
+require_once plugin_dir_path(__FILE__).'inc/CPT.php';
