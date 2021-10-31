@@ -140,3 +140,8 @@ register_activation_hook (__FILE__, array( $base, 'activate_base' ) );
 
 
 register_deactivation_hook (__FILE__, array( $base, 'deactivate_base' ) );
+
+
+# ==================================================================================
+# base-plugin part -1
+
