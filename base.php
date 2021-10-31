@@ -30,6 +30,12 @@ defined('ABSPATH') or die('Hey, what are you doing here? You silly human!');
 
 class Base{
 
+    public $plugin_setting_title;
+
+    public function __construct(){
+        
+        $this->plugin_setting_title = plugin_basename(__FILE__); // plugin_basename(__FILE__); get the plugin main base file example base.php 
+    }
 
     function register(){
 
@@ -40,6 +46,17 @@ class Base{
 
         //custom page 
         add_action("admin_menu", array($this, 'add_admin_pages'));
+
+        //setting page title
+        add_action( "plugin_action_links_$this->plugin_setting_title" , array($this, 'setting_link'));  
+    }
+
+    public function setting_link( $links){
+        //
+        $settings_links = '<a href="admin.php?page=base_plugin">HII</a>';
+        array_push($links, $settings_links);
+
+        return $links; 
     }
 
     protected function create_post_type(){
