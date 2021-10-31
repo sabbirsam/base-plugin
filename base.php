@@ -1,5 +1,3 @@
-# base-plugin part -1
-
 <?php
 /**
  * @package  questionnaire-based-filter
